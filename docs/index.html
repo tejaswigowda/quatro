@@ -30,7 +30,7 @@
     var zC = 0;
 
 
-    window.calibrate = function() {
+    window.calibrate = function () {
         wC = currentRotation.w;
         xC = currentRotation.x;
         yC = currentRotation.y;
@@ -38,7 +38,6 @@
     }
 
     window.rotateModel = function (x, y, z, w) {
-        console.log(x, y, z, w);
         currentRotation = { x, y, z, w };
         var currQ = new THREE.Quaternion(x, y, z, w);
         var calibQ = new THREE.Quaternion(xC, yC, zC, wC);
@@ -67,17 +66,38 @@
         scene.add(gltf.scene);
         // scale the model
         theModel.scale.set(0.5, 0.5, 0.5);
+        theModel.position.set(0, 4, 0);
 
         // axis helper
-        const axesHelper = new THREE.AxesHelper(15);
+        const axesHelper = new THREE.AxesHelper(50);
         scene.add(axesHelper);
+
+        // move axis to center of the model
+        axesHelper.position.set(0, 4, 0);
+
+        //  texture floor
+        const textureLoader = new THREE.TextureLoader();
+        const floorTexture = textureLoader.load('https://threejs.org/examples/textures/hardwood2_diffuse.jpg');
+        floorTexture.wrapS = THREE.RepeatWrapping;
+        floorTexture.wrapT = THREE.RepeatWrapping;
+        floorTexture.repeat.set(10, 24);
+        const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture, side: THREE.DoubleSide });
+        const floorGeometry = new THREE.PlaneGeometry(50, 50);
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = Math.PI / 2;
+        scene.add(floor);
+
+ 
 
 
         const light = new THREE.AmbientLight(0xffffff);
         scene.add(light);
 
+        const light1 = new THREE.DirectionalLight(0xffffff, 1);
+        light1.position.set(5, 5, 5);
+
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
-        camera.position.set(0, 0, 10);
+        camera.position.set(0, 7.2, 10);
         //camera.lookAt(new THREE.Vector3());
         scene.add(camera);
 
@@ -217,7 +237,6 @@
         const message = decoder.decode(value);
         var args = message.split(" ");
         window.rotateModel(parseFloat(args[1]), parseFloat(args[2]), parseFloat(args[3]), parseFloat(args[4]));
-        console.log('Received: ', message);
     }
 
     // Debounce the connect function
