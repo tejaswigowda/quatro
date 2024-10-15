@@ -481,13 +481,14 @@ void TaskReadICM(void *pvParameters)
 
 void TaskBluetooth(void *pvParameters)
 {
+  int count = 0;
     for (;;)
     {
         static uint32_t prev_ms_ble = millis();
-        if (millis() > prev_ms_ble + 1000 / 40)
+        if (millis() > prev_ms_ble + 1000 / fps)
         {
             prev_ms_ble = millis();
-            String url = mac_address + " " + String(quat.x, 4) + " " + String(quat.y, 4) + " " + String(quat.z, 4) + " " + String(quat.w, 4);
+            String url = mac_address + " " + String(quat.x, 4) + " " + String(quat.y, 4) + " " + String(quat.z, 4) + " " + String(quat.w, 4) + " " + String(count++) + " " + String(batt_v);
             pCharacteristic->setValue(url.c_str());
             pCharacteristic->notify();
         }

@@ -105,7 +105,7 @@
         scene.add(grid);
 
         // add ble sky gradient background
-        
+
 
 
 
@@ -259,6 +259,7 @@
         const decoder = new TextDecoder('utf-8');
         const message = decoder.decode(value);
         var args = message.split(" ");
+        console.log(args);
         window.rotateModel(parseFloat(args[1]), parseFloat(args[2]), parseFloat(args[3]), parseFloat(args[4]));
     }
 
