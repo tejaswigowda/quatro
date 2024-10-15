@@ -12,15 +12,22 @@
     <!-- three.js -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-    <button style="position: fixed; z-index: 100;" id="blebtn">Connect a Quatro </button>
-    <button style="position: fixed; z-index: 100; right: 0px;bottom:0px" onclick="calibrate()">calibrate</button>
+    <button style="position: fixed; z-index: 100;" class="btn waves-effect waves-light blue" id="blebtn">Connect a Quatro
+        <i class="material-icons left large">bluetooth</i> </button>
+    <button style="position: fixed; z-index: 100; right: 0px;" class="btn waves-effect waves-light green" onclick="calibrate()">calibrate
+        <i class="material-icons left large">settings</i> </button>
 </body>
 <script>
+    var pivot;
     var theModel;
     var renderer, scene, camera;
     var currentRotation = { x: 0, y: 0, z: 0, w: 1 };
@@ -44,7 +51,9 @@
 
         var refQInverse = new THREE.Quaternion().copy(calibQ).invert();
         var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, currQ);
-        theModel.quaternion.copy(new THREE.Quaternion(transformedQ.x, -transformedQ.z, transformedQ.y, transformedQ.w));
+        //theModel.quaternion.copy(new THREE.Quaternion(transformedQ.x, -transformedQ.z, transformedQ.y, transformedQ.w));
+        pivot.quaternion.copy(new THREE.Quaternion(transformedQ.x, -transformedQ.z, transformedQ.y, transformedQ.w));
+
         renderer.render(scene, camera);
     }
 </script>
@@ -68,6 +77,20 @@
         theModel.scale.set(0.5, 0.5, 0.5);
         theModel.position.set(0, 4, 0);
 
+        const box = new THREE.Box3().setFromObject(theModel);
+
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+
+        theModel.position.sub(center);
+
+        pivot = new THREE.Object3D();
+        pivot.position.copy(center);
+
+        pivot.add(theModel);
+
+        scene.add(pivot);
+
         // axis helper
         const axesHelper = new THREE.AxesHelper(50);
         scene.add(axesHelper);
@@ -75,19 +98,19 @@
         // move axis to center of the model
         axesHelper.position.set(0, 4, 0);
 
-        //  texture floor
-        const textureLoader = new THREE.TextureLoader();
-        const floorTexture = textureLoader.load('https://threejs.org/examples/textures/hardwood2_diffuse.jpg');
-        floorTexture.wrapS = THREE.RepeatWrapping;
-        floorTexture.wrapT = THREE.RepeatWrapping;
-        floorTexture.repeat.set(10, 24);
-        const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture, side: THREE.DoubleSide });
-        const floorGeometry = new THREE.PlaneGeometry(50, 50);
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.rotation.x = Math.PI / 2;
-        scene.add(floor);
+        //  grid floor
+        const grid = new THREE.GridHelper(100, 100, 0x000000, 0x000000);
+        grid.material.opacity = 0.2;
+        grid.material.transparent = true;
+        scene.add(grid);
 
- 
+        // add ble sky gradient background
+        
+
+
+
+
+
 
 
         const light = new THREE.AmbientLight(0xffffff);
