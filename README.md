@@ -2,7 +2,7 @@
 
 An easy-to-use, lightweight, open-source, open hardware web-bluetooth IMU visualizer.
 
-<img src="docs/demo.gif" alt="Demo" width="100%" style='max-width:500px'>
+<img src="docs/demo.gif" alt="Demo" width="100%" style='max-width:400px'>
 
 ## Features
 - Visualize IMU data in real-time
